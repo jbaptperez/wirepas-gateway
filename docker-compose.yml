@@ -54,7 +54,7 @@ services:
         target: /var/run/dbus
 
   wirepas-mosquitto:
-    image: wirepas/mosquitto:latest
+    image: jbaptperez/wirepas-mosquitto:latest
     restart: always
     environment:
       WM_SERVICES_MQTT_USERNAME: "${WM_SERVICES_MQTT_USERNAME:-mqttuser}"

@@ -2,7 +2,17 @@
 
 Runs a wirepas gateway from a Docker compose file (MQTT broker included).
 
-Adapt the environment variables.
+First, create a `.env` file from the template:
+
+```bash
+cp .env-template .env
+```
+
+Adapt the environment variables located in `.env`:
+
+```bash
+vi .env
+```
 
 Then create the dedicated D-Bus volume, network and containers and start the
 containers using the following command:

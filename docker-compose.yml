@@ -19,14 +19,14 @@ services:
       - wirepas-d-bus
     environment:
       WM_GW_SINK_ID: "0"
-      WM_GW_SINK_UART_PORT: "/dev/ttyUSB0"
+      WM_GW_SINK_UART_PORT: "/dev/serial/by-wirepas-id/0"
       WM_GW_SINK_BITRATE: "125000"
     volumes:
       - type: volume
         source: wirepas-d-bus
         target: /var/run/dbus
     devices:
-      - "/dev/ttyUSB0:/dev/ttyUSB0"
+      - "${SINK_0_PATH:-/dev/serial/by-wirepas-id/0}:/dev/serial/by-wirepas-id/0"
 
   wirepas-transport-service:
     image: wirepas/gateway:v1.3.0
@@ -42,8 +42,8 @@ services:
       WM_GW_WHITENED_ENDPOINTS_FILTER: ""
       WM_SERVICES_MQTT_HOSTNAME: "wirepas-mosquitto"
       WM_SERVICES_MQTT_PORT: "1883"
-      WM_SERVICES_MQTT_USERNAME: "mqttuser"
-      WM_SERVICES_MQTT_PASSWORD: "mqttpassword"
+      WM_SERVICES_MQTT_USERNAME: "${WM_SERVICES_MQTT_USERNAME:-mqttuser}"
+      WM_SERVICES_MQTT_PASSWORD: "${WM_SERVICES_MQTT_PASSWORD:-mqttpassword}"
       WM_SERVICES_MQTT_CA_CERTS: "/etc/my-tls-file"
       WM_SERVICES_MQTT_ALLOW_UNTRUSTED: "true"
       WM_SERVICES_MQTT_FORCE_UNSECURE: "true"
@@ -57,10 +57,10 @@ services:
     image: wirepas/mosquitto:latest
     restart: always
     environment:
-      WM_SERVICES_MQTT_USERNAME: "mqttuser"
-      WM_SERVICES_MQTT_PASSWORD: "mqttpassword"
+      WM_SERVICES_MQTT_USERNAME: "${WM_SERVICES_MQTT_USERNAME:-mqttuser}"
+      WM_SERVICES_MQTT_PASSWORD: "${WM_SERVICES_MQTT_PASSWORD:-mqttpassword}"
     ports:
-      - published: 1883
+      - published: ${WM_SERVICES_MQTT_PORT:-1883}
         target: 1883
         protocol: tcp
         mode: host

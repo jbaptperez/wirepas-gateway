@@ -1,46 +1,51 @@
 version: "3.7"
 
 volumes:
-  wirepas-d-bus:
+  d-bus-volume:
 
 services:
-  wirepas-d-bus:
-    image: jbaptperez/wirepas-d-bus:latest
+  d-bus-service:
+    build:
+      context: d-bus-service
+    image: jbaptperez/wirepas-d-bus-service:latest
     restart: always
     volumes:
       - type: volume
-        source: wirepas-d-bus
+        source: d-bus-volume
         target: /var/run/dbus
 
-  wirepas-sink-service:
+  sink-service:
+    build:
+      context: sink-service
     image: jbaptperez/wirepas-sink-service:latest
     restart: always
     depends_on:
-      - wirepas-d-bus
+      - d-bus-service
     environment:
       WM_GW_SINK_ID: "0"
-      WM_GW_SINK_UART_PORT: "/dev/serial/by-wirepas-id/0"
+      WM_GW_SINK_UART_PORT: "/dev/serial/by-wirepas-sink-id/0"
       WM_GW_SINK_BITRATE: "125000"
     volumes:
       - type: volume
-        source: wirepas-d-bus
+        source: d-bus-volume
         target: /var/run/dbus
     devices:
-      - "${SINK_0_PATH:-/dev/serial/by-wirepas-id/0}:/dev/serial/by-wirepas-id/0"
+      - "${SINK_0_PATH:-/dev/serial/by-wirepas-sink-id/0}:/dev/serial/by-wirepas-sink-id/0"
 
-  wirepas-transport-service:
-    image: wirepas/gateway:v1.3.0
+  transport-service:
+    build:
+      context: transport-service
+    image: jbaptperez/wirepas-transport-service:latest
     restart: always
     depends_on:
-      - wirepas-d-bus
-      - wirepas-mosquitto
-    command: transport
+      - d-bus-service
+      - mosquitto-service
     environment:
       WM_GW_MODEL: "lxgw"
       WM_GW_VERSION: "gitbuild"
       WM_GW_IGNORED_ENDPOINTS_FILTER: ""
       WM_GW_WHITENED_ENDPOINTS_FILTER: ""
-      WM_SERVICES_MQTT_HOSTNAME: "wirepas-mosquitto"
+      WM_SERVICES_MQTT_HOSTNAME: "mosquitto-service"
       WM_SERVICES_MQTT_PORT: "1883"
       WM_SERVICES_MQTT_USERNAME: "${WM_SERVICES_MQTT_USERNAME:-mqttuser}"
       WM_SERVICES_MQTT_PASSWORD: "${WM_SERVICES_MQTT_PASSWORD:-mqttpassword}"
@@ -50,11 +55,13 @@ services:
       PYTHONUNBUFFERED: "true"
     volumes:
       - type: volume
-        source: wirepas-d-bus
+        source: d-bus-volume
         target: /var/run/dbus
 
-  wirepas-mosquitto:
-    image: jbaptperez/wirepas-mosquitto:latest
+  mosquitto-service:
+    build:
+      context: mosquitto-service
+    image: jbaptperez/wirepas-mosquitto-service:latest
     restart: always
     environment:
       WM_SERVICES_MQTT_USERNAME: "${WM_SERVICES_MQTT_USERNAME:-mqttuser}"

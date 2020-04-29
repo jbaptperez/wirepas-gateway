@@ -1,0 +1,62 @@
+# Jean-Baptiste PEREZ - Dietal
+#
+# Sink IDs are attributed according to the USB bus and port path of the plugged
+# USB to RS-485 adapter.
+# Commands that help to get the USB port path:
+#   lsusb -t # Checking plugged devices
+#   dmesg -w # Checking live plug events
+#
+# Example to get possibles rules for a given /dev node:
+#   udevadm info -a -n \
+#       /dev/serial/by-id/usb-FTDI_USB-RS485_Cable_FTWDVUFG-if00-port0
+#
+# Note that rules filters are added and only rules of the same "device" can be
+# used toghether.
+#
+# Use the following command to make udev reload the rules:
+#   udevadm trigger
+#
+
+#
+# Raspberry Pi 3B+'s configuration:
+#
+#   Sink ID | USB port location | USB bus | USB port | filter
+#   --------+-------------------+---------+----------+-----------
+#         0 | Upper left        |       1 |    1.1.2 | "1-1.1.2"
+#         1 | Lower left        |       1 |    1.1.3 | "1-1.1.3"
+#         2 | Upper right       |       1 |      1.3 | "1-1.3"
+#         3 | Lower right       |       1 |      1.2 | "1-1.2"
+#
+KERNELS=="1-1.1.2:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/0"
+KERNELS=="1-1.1.3:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/1"
+KERNELS=="1-1.3:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/2"
+KERNELS=="1-1.2:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/3"
+
+#
+# Raspberry Pi 2B+'s configuration:
+#
+#   Sink ID | USB port location | USB bus | USB port | filter
+#   --------+-------------------+---------+----------+-----------
+#         0 | Upper left        |       1 |      1.2 | "1-1.2"
+#         1 | Lower left        |       1 |      1.3 | "1-1.3"
+#         2 | Upper right       |       1 |      1.4 | "1-1.4"
+#         3 | Lower right       |       1 |      1.5 | "1-1.5"
+#
+#KERNELS=="1-1.2:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/0"
+#KERNELS=="1-1.3:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/1"
+#KERNELS=="1-1.4:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/2"
+#KERNELS=="1-1.5:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/3"
+
+#
+# Vostro-3559's laptop configuration:
+#
+#   Sink ID | USB port location | USB bus | USB port | filter
+#   --------+-------------------+---------+----------+--------
+#         0 | Left              |       1 |        1 | "1-1"
+#         1 | Front right       |       1 |        2 | "1-2"
+#         2 | Rear right        |       1 |        3 | "1-3"
+#
+#KERNELS=="1-1:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/0"
+#KERNELS=="1-2:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/1"
+#KERNELS=="1-3:*", SUBSYSTEMS=="usb", DRIVERS=="ftdi_sio", ATTRS{interface}=="USB-RS485 Cable", SYMLINK+="serial/by-wirepas-sink-id/2"
+

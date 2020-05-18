@@ -95,6 +95,7 @@ services:
       - d-bus-service
       - mosquitto-service
     environment:
+      WM_GW_ID: "${WM_GW_ID:-}"
       WM_GW_MODEL: "lxgw"
       WM_GW_VERSION: "gitbuild"
       WM_GW_IGNORED_ENDPOINTS_FILTER: ""
